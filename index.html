@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Συμμετοχή σε έρευνα</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="shell">
+
+  <!-- ================= ΟΘΟΝΗ: ΕΙΣΑΓΩΓΗ / ΣΥΓΚΑΤΑΘΕΣΗ ================= -->
+  <section class="screen is-active" id="screen-intro" aria-labelledby="intro-title">
+    <div class="card">
+      <h1 id="intro-title">Συμμετοχή σε έρευνα</h1>
+
+      <p>Σας ευχαριστούμε για τη συμμετοχή σας στην παρούσα έρευνα, η οποία πραγματοποιείται στο πλαίσιο μεταπτυχιακής διπλωματικής εργασίας του Τμήματος Τεχνών Ήχου και Εικόνας του Ιονίου Πανεπιστημίου.</p>
+
+      <p>Σκοπός της έρευνας είναι η αξιολόγηση της εμπειρίας παρακολούθησης ψηφιακού εκπαιδευτικού περιεχομένου και η διερεύνηση παραγόντων που επηρεάζουν την αποτελεσματικότητα και την αντίληψη του εκπαιδευτικού υλικού.</p>
+
+      <p>Η συμμετοχή στην έρευνα περιλαμβάνει την παρακολούθηση εκπαιδευτικού βίντεο διάρκειας περίπου 7–8 λεπτών και τη συμπλήρωση σύντομου ερωτηματολογίου πριν και μετά την παρακολούθηση. Ο συνολικός απαιτούμενος χρόνος εκτιμάται σε περίπου 12–15 λεπτά.</p>
+
+      <p>Πέραν της διεύθυνσης ηλεκτρονικού ταχυδρομείου, τα δεδομένα που θα συλλεχθούν δεν περιλαμβάνουν στοιχεία άμεσης ταυτοποίησης των συμμετεχόντων και θα χρησιμοποιηθούν αποκλειστικά για τους σκοπούς της παρούσας ερευνητικής μελέτης. Η επεξεργασία και παρουσίασή τους θα πραγματοποιηθεί μόνο σε συγκεντρωτική και ανώνυμη μορφή.</p>
+
+      <p>Η διεύθυνση ηλεκτρονικού ταχυδρομείου σας θα ζητηθεί αποκλειστικά για τη διασφάλιση ότι κάθε άτομο συμμετέχει μία μόνο φορά. Δεν θα συσχετιστεί με τις απαντήσεις σας κατά την ανάλυση, δεν θα δημοσιευθεί και θα διαγραφεί μετά την ολοκλήρωση της συλλογής των δεδομένων.</p>
+
+      <p>Η συμμετοχή σας είναι εθελοντική και μπορείτε να αποχωρήσετε από τη διαδικασία οποιαδήποτε στιγμή πριν από την οριστική υποβολή των απαντήσεών σας.</p>
+
+      <p>Πατώντας «Συνέχεια», δηλώνετε ότι:</p>
+      <ul class="plain-list">
+        <li>Έχετε διαβάσει και κατανοήσει τις παραπάνω πληροφορίες.</li>
+        <li>Συμμετέχετε εθελοντικά στην έρευνα.</li>
+        <li>Είστε άνω των 18 ετών.</li>
+      </ul>
+
+      <hr class="rule">
+
+      <div class="question" id="q-email">
+        <label class="q-text" for="email">Διεύθυνση email</label>
+        <input type="email" id="email" name="email" class="text-input"
+               autocomplete="email" spellcheck="false" inputmode="email"
+               placeholder="onoma@example.com">
+        <p class="q-error" hidden>Παρακαλώ συμπληρώστε μια έγκυρη διεύθυνση email.</p>
+      </div>
+
+      <div class="question" id="q-consent">
+        <label class="check-row">
+          <input type="checkbox" id="consent">
+          <span>Έχω διαβάσει τις παραπάνω πληροφορίες και συναινώ να συμμετάσχω στην έρευνα.</span>
+        </label>
+        <p class="q-error" hidden>Η συγκατάθεση είναι απαραίτητη για τη συμμετοχή.</p>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="btn-intro-next">Συνέχεια</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ΟΘΟΝΕΣ ΕΡΩΤΗΣΕΩΝ (παράγονται από το app.js) ============ -->
+  <div id="generated-screens"></div>
+
+  <!-- ======================== ΟΘΟΝΗ: ΒΙΝΤΕΟ ======================== -->
+  <section class="screen" id="screen-video" aria-labelledby="video-title">
+    <div class="card">
+      <h2 id="video-title">Εκπαιδευτικό βίντεο</h2>
+
+      <p>Παρακαλούμε παρακολουθήστε προσεκτικά το παρακάτω εκπαιδευτικό βίντεο. Μετά την ολοκλήρωση της παρακολούθησης θα σας ζητηθεί να απαντήσετε σε σύντομες ερωτήσεις σχετικά με την εμπειρία σας και το περιεχόμενο του μαθήματος.</p>
+
+      <p>Συνιστάται η παρακολούθηση του βίντεο σε ήσυχο περιβάλλον και χωρίς διακοπές, ώστε να διασφαλιστεί η καλύτερη δυνατή εμπειρία.</p>
+
+      <div class="player-frame">
+        <div class="player-ratio">
+          <div id="player"></div>
+          <!-- Ασπίδα: μπλοκάρει κάθε αλληλεπίδραση με τον player του YouTube. -->
+          <div class="player-shield" id="player-shield" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="player-bar">
+        <div class="track" aria-hidden="true"><div class="track-fill" id="track-fill"></div></div>
+        <div class="player-row">
+          <button type="button" class="btn btn-quiet" id="btn-playpause" disabled>Αναπαραγωγή</button>
+          <span class="time" id="time-readout">0:00 / 0:00</span>
+        </div>
+      </div>
+
+      <p class="hint" id="video-hint">Το κουμπί «Συνέχεια στο ερωτηματολόγιο» θα ενεργοποιηθεί μόλις ολοκληρωθεί η παρακολούθηση του βίντεο.</p>
+      <p class="q-error" id="video-error" hidden></p>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="btn-video-next" disabled>Συνέχεια στο ερωτηματολόγιο</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ΟΘΟΝΗ: ΤΕΛΙΚΗ ===================== -->
+  <section class="screen" id="screen-done" aria-live="polite">
+    <div class="card" id="done-body"></div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
