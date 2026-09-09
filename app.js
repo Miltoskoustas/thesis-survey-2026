@@ -60,6 +60,18 @@
     'ss6/zrvOriDPg86xz4Igz4PPhM63zr0gzr/Ou86/zrrOu86uz4HPic+Dzrcgz4TOt8+CIM6t' +
     'z4HOtc+Fzr3Osc+CLjwvcD4K';
 
+  var VERSION_NOTE =
+    'eyJBIjogIs6gzrHPgc6xzrrOv867zr/Phc64zq7Pg86xz4TOtSDPhM63zr0gzrXOus60zr/P' +
+    'h86uIM6RIOKAlCDPhM6/IM61zrrPgM6xzrnOtM61z4XPhM65zrrPjCDOss6vzr3PhM61zr8g' +
+    'z4PPhM6/IM6/z4DOv86vzr8gzr8gz4DOsc+Bzr/Phc+DzrnOsc+Dz4TOrs+CIM6uz4TOsc69' +
+    'IM+IzrfPhs65zrHOus+MIM6/zrzOv86vz4nOvM6xLCDOtM63zrzOuc6/z4XPgc6zzrfOvM6t' +
+    'zr3OvyDOvM61IM+EzrXPh869zr/Ou86/zrPOr861z4IgzqTOtc+Hzr3Ot8+Ezq7PgiDOnc6/' +
+    'zrfOvM6/z4PPjc69zrfPgi4iLCAiQiI6ICLOoM6xz4HOsc66zr/Ou86/z4XOuM6uz4POsc+E' +
+    'zrUgz4TOt869IM61zrrOtM6/z4fOriDOkiDigJQgz4TOvyDOtc66z4DOsc65zrTOtc+Fz4TO' +
+    'uc66z4wgzrLOr869z4TOtc6/IM+Dz4TOvyDOv8+Azr/Or86/IM6/IM+AzrHPgc6/z4XPg865' +
+    'zrHPg8+Ezq7PgiDOrs+EzrHOvSDPhM6/IM+Az4HOsc6zzrzOsc+EzrnOus+MIM6sz4TOv868' +
+    'zr8sIM+DzrUgz4bPhc+DzrnOus6uIM6yzrnOvc+EzrXOv8+DzrrPjM+AzrfPg863LiJ9';
+
   /* ------------------------------------------------------------------
      Κλίμακα Likert (τιμές 1-5, ετικέτες ορατές)
      ------------------------------------------------------------------ */
@@ -906,8 +918,40 @@
 
   function showFinalScreen() {
     /* Το κείμενο μπαίνει στο DOM μόνο τώρα, μετά την υποβολή. */
-    $('done-body').innerHTML = decode(FINAL_NOTE);
+    var body = $('done-body');
+    body.innerHTML = decode(FINAL_NOTE);
+    insertVersionNote(body);
     showScreen('screen-done');
+  }
+
+  /**
+   * Προσθέτει με έντονα γράμματα τη γραμμή που λέει στον συμμετέχοντα ποια
+   * εκδοχή παρακολούθησε, αμέσως μετά τη δεύτερη παράγραφο.
+   */
+  function insertVersionNote(body) {
+    if (!assignment || !assignment.version) return;
+
+    var notes;
+    try {
+      notes = JSON.parse(decode(VERSION_NOTE));
+    } catch (err) {
+      return;
+    }
+
+    var text = notes[assignment.version];
+    if (!text) return;
+
+    var paragraph = document.createElement('p');
+    var strong = document.createElement('strong');
+    strong.textContent = text;
+    paragraph.appendChild(strong);
+
+    var existing = body.querySelectorAll('p');
+    if (existing.length >= 2) {
+      existing[1].insertAdjacentElement('afterend', paragraph);
+    } else {
+      body.appendChild(paragraph);
+    }
   }
 
   /* ------------------------------------------------------------------
