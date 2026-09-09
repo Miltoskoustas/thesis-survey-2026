@@ -926,7 +926,8 @@
 
   /**
    * Προσθέτει με έντονα γράμματα τη γραμμή που λέει στον συμμετέχοντα ποια
-   * εκδοχή παρακολούθησε, αμέσως μετά τη δεύτερη παράγραφο.
+   * εκδοχή παρακολούθησε, με οριζόντια γραμμή πριν και μετά. Τοποθετείται
+   * μετά την τρίτη παράγραφο — εκείνη που εξηγεί ότι υπήρχαν δύο εκδοχές.
    */
   function insertVersionNote(body) {
     if (!assignment || !assignment.version) return;
@@ -946,12 +947,23 @@
     strong.textContent = text;
     paragraph.appendChild(strong);
 
+    var block = document.createDocumentFragment();
+    block.appendChild(createRule());
+    block.appendChild(paragraph);
+    block.appendChild(createRule());
+
     var existing = body.querySelectorAll('p');
-    if (existing.length >= 2) {
-      existing[1].insertAdjacentElement('afterend', paragraph);
+    if (existing.length >= 3) {
+      existing[2].parentNode.insertBefore(block, existing[2].nextSibling);
     } else {
-      body.appendChild(paragraph);
+      body.appendChild(block);
     }
+  }
+
+  function createRule() {
+    var rule = document.createElement('hr');
+    rule.className = 'rule';
+    return rule;
   }
 
   /* ------------------------------------------------------------------
