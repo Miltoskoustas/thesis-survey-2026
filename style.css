@@ -325,12 +325,34 @@ p { margin: 0 0 16px; }
 
 /* ---------- Player ---------- */
 
+.video-stage { position: relative; }
+
 .player-frame {
   margin: 24px 0 14px;
   border-radius: var(--radius);
   overflow: hidden;
   background: #000;
 }
+
+/* Κουμπί εξόδου από πλήρη οθόνη — πάνω από την ασπίδα, ώστε να πατιέται. */
+.fs-exit {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .62);
+  color: #fff;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.fs-exit:hover { background: rgba(0, 0, 0, .82); }
 
 .player-ratio {
   position: relative;
@@ -390,6 +412,62 @@ p { margin: 0 0 16px; }
   color: var(--ink-soft);
   margin-bottom: 0;
 }
+
+/* ---------- Πλήρης οθόνη ----------
+   Οι δύο κανόνες είναι ίδιοι· χρειάζονται ξεχωριστά γιατί ένας άγνωστος
+   ψευδο-επιλογέας ακυρώνει ολόκληρο τον κανόνα σε αρκετούς browsers. */
+
+#video-stage:fullscreen {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+#video-stage:fullscreen .player-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+#video-stage:fullscreen .player-ratio {
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+#video-stage:fullscreen .player-bar {
+  margin: 0;
+  padding: 14px 22px 18px;
+  background: #000;
+}
+
+#video-stage:fullscreen .time { color: #cfd6de; }
+
+#video-stage:-webkit-full-screen {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+#video-stage:-webkit-full-screen .player-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+#video-stage:-webkit-full-screen .player-ratio {
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+#video-stage:-webkit-full-screen .player-bar {
+  margin: 0;
+  padding: 14px 22px 18px;
+  background: #000;
+}
+
+#video-stage:-webkit-full-screen .time { color: #cfd6de; }
 
 /* ---------- Μικρές οθόνες ---------- */
 

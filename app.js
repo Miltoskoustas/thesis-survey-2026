@@ -862,6 +862,51 @@
     }
   }
 
+  /* ------------------------------------------------------------------
+     Πλήρης οθόνη
+
+     Σε πλήρη οθόνη μπαίνει το #video-stage, δηλαδή ο player μαζί με την
+     ασπίδα και τα δικά μας χειριστήρια. Έτσι ο χρήστης εξακολουθεί να μην
+     μπορεί να αλληλεπιδράσει με τον player του YouTube, και συνεχίζει να
+     βλέπει την ένδειξη χρόνου. Έξοδος με Escape (από τον browser) ή με το
+     κουμπί ✕.
+     ------------------------------------------------------------------ */
+
+  function fullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function fullscreenSupported() {
+    var stage = $('video-stage');
+    return !!(stage && (stage.requestFullscreen || stage.webkitRequestFullscreen));
+  }
+
+  function toggleFullscreen() {
+    var stage = $('video-stage');
+    if (!stage) return;
+
+    if (fullscreenElement()) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      return;
+    }
+
+    var request = stage.requestFullscreen || stage.webkitRequestFullscreen;
+    if (!request) return;
+
+    var result = request.call(stage);
+    /* Ο Chrome επιστρέφει Promise· αν απορριφθεί, δεν χαλάει τίποτα. */
+    if (result && typeof result.catch === 'function') {
+      result.catch(function () {});
+    }
+  }
+
+  function syncFullscreenUi() {
+    var active = !!fullscreenElement();
+    $('btn-exit-fullscreen').hidden = !active;
+    $('btn-fullscreen').textContent = active ? 'Έξοδος από πλήρη οθόνη' : 'Πλήρης οθόνη';
+  }
+
   function wireVideoControls() {
     $('btn-playpause').addEventListener('click', function () {
       if (!player) return;
@@ -875,6 +920,11 @@
     $('btn-video-next').addEventListener('click', function () {
       if ($('btn-video-next').disabled) return;
       if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      /* Αν είμαστε ακόμη σε πλήρη οθόνη, βγαίνουμε πριν αλλάξει οθόνη. */
+      if (fullscreenElement()) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
       showScreen('screen-s2');
     });
 
@@ -889,6 +939,16 @@
     $('player-shield').addEventListener('contextmenu', function (e) {
       e.preventDefault();
     });
+
+    /* Πλήρης οθόνη. Αν ο browser δεν την υποστηρίζει, κρύβουμε το κουμπί. */
+    if (fullscreenSupported()) {
+      $('btn-fullscreen').addEventListener('click', toggleFullscreen);
+      $('btn-exit-fullscreen').addEventListener('click', toggleFullscreen);
+      document.addEventListener('fullscreenchange', syncFullscreenUi);
+      document.addEventListener('webkitfullscreenchange', syncFullscreenUi);
+    } else {
+      $('btn-fullscreen').hidden = true;
+    }
   }
 
   /* ------------------------------------------------------------------

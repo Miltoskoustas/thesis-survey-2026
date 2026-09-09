@@ -73,19 +73,26 @@
 
       <p>Συνιστάται η παρακολούθηση του βίντεο σε ήσυχο περιβάλλον και χωρίς διακοπές, ώστε να διασφαλιστεί η καλύτερη δυνατή εμπειρία.</p>
 
-      <div class="player-frame">
-        <div class="player-ratio">
-          <div id="player"></div>
-          <!-- Ασπίδα: μπλοκάρει κάθε αλληλεπίδραση με τον player του YouTube. -->
-          <div class="player-shield" id="player-shield" aria-hidden="true"></div>
+      <!-- Ό,τι μπαίνει σε πλήρη οθόνη βρίσκεται μέσα σε αυτό το στοιχείο. -->
+      <div class="video-stage" id="video-stage">
+        <div class="player-frame">
+          <div class="player-ratio">
+            <div id="player"></div>
+            <!-- Ασπίδα: μπλοκάρει κάθε αλληλεπίδραση με τον player του YouTube. -->
+            <div class="player-shield" id="player-shield" aria-hidden="true"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="player-bar">
-        <div class="track" aria-hidden="true"><div class="track-fill" id="track-fill"></div></div>
-        <div class="player-row">
-          <button type="button" class="btn btn-quiet" id="btn-playpause" disabled>Αναπαραγωγή</button>
-          <span class="time" id="time-readout">0:00 / 0:00</span>
+        <button type="button" class="fs-exit" id="btn-exit-fullscreen"
+                aria-label="Έξοδος από πλήρη οθόνη" title="Έξοδος (Esc)" hidden>✕</button>
+
+        <div class="player-bar">
+          <div class="track" aria-hidden="true"><div class="track-fill" id="track-fill"></div></div>
+          <div class="player-row">
+            <button type="button" class="btn btn-quiet" id="btn-playpause" disabled>Αναπαραγωγή</button>
+            <button type="button" class="btn btn-quiet" id="btn-fullscreen">Πλήρης οθόνη</button>
+            <span class="time" id="time-readout">0:00 / 0:00</span>
+          </div>
         </div>
       </div>
 
