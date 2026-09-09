@@ -4,16 +4,16 @@
    ========================================================================== */
 
 :root {
-  --accent: #35618f;
-  --accent-dark: #2a4e73;
-  --accent-soft: #eaf1f8;
-  --ink: #1f2733;
-  --ink-soft: #5b6674;
-  --line: #dfe3e8;
-  --page: #f4f6f8;
-  --card: #ffffff;
+  --accent: #AC604C;
+  --accent-dark: #8F4939;
+  --accent-soft: #E8B0A0;
+  --ink: #633C34;
+  --ink-soft: #8A655C;
+  --line: #E3B6AA;
+  --page: #F0C0B2;
+  --card: #FFF1EB;
   --danger: #a4302a;
-  --danger-soft: #fdf1f0;
+  --danger-soft: #f3d7d4;
   --radius: 10px;
 }
 
@@ -402,4 +402,58 @@ p { margin: 0 0 16px; }
   .actions { justify-content: stretch; }
   .actions .btn { width: 100%; }
   .follow-up { margin-left: 0; }
+}
+
+/* ---------- Κουμπί Ράδιο ---------- */
+
+label:has(input[type="radio"]) {
+  display: flex;
+  align-items: center;
+  line-height: 0.95;
+}
+
+input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 2px solid #C98270;
+  border-radius: 50%;
+  background: var(--card);
+  cursor: pointer;
+  vertical-align: middle;
+  margin: 0;
+}
+
+input[type="radio"]:hover {
+  border-color: var(--accent);
+}
+
+input[type="radio"]:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: inset 0 0 0 4px var(--card);
+}
+
+/* ---------- Τσεκ μποξ ---------- */
+
+label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #C98270;
+  border-radius: 5px;
+  background: var(--card);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+  appearance: auto;
+  accent-color: var(--accent);
 }
