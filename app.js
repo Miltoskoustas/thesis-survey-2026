@@ -132,6 +132,22 @@
           text: 'Πόσο εξοικειωμένος/η είστε με εργαλεία Τεχνητής Νοημοσύνης;',
           type: 'radio',
           options: ['Καθόλου', 'Λίγο', 'Μέτρια', 'Πολύ', 'Πάρα πολύ']
+        },
+        {
+          key: 'DEM6_device',
+          text: 'Από ποια συσκευή παρακολουθείτε;',
+          type: 'radio',
+          options: [
+            'Υπολογιστής / λάπτοπ',
+            'Κινητό',
+            'Τάμπλετ',
+            { label: 'Άλλο:', value: 'Άλλο' }
+          ],
+          followUp: {
+            key: 'DEM6_device_other',
+            when: 'Άλλο',
+            placeholder: 'Προσδιορίστε'
+          }
         }
       ]
     },
@@ -241,6 +257,7 @@
   var PAYLOAD_KEYS = [
     'version', 'email',
     'DEM1_age', 'DEM2_gender', 'DEM3_edu', 'DEM3_edu_other', 'DEM4_freq', 'DEM5_ai',
+    'DEM6_device', 'DEM6_device_other',
     'LE1', 'LE2', 'LE3', 'LE4', 'LE5', 'LE6',
     'SP1', 'SP2', 'SP3', 'SP4',
     'AU1', 'AU2', 'AU3',
