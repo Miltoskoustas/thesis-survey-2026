@@ -751,7 +751,15 @@
       vars.origin = location.origin;
     }
 
+    /* Οι ρητές διαστάσεις είναι κρίσιμες: χωρίς αυτές το YouTube υποθέτει
+       640x390 και σερβίρει 480p, ανεξάρτητα από το πόσο μεγάλος φαίνεται ο
+       player μέσω CSS. Η ανάλυση επιλέγεται με βάση το μέγεθος που γνωρίζει
+       ο ίδιος ο player, όχι το οπτικό. */
+    var size = stageSize_();
+
     player = new YT.Player('player', {
+      width: size.width,
+      height: size.height,
       videoId: videoId,
       playerVars: vars,
       events: {
@@ -762,8 +770,35 @@
     });
   }
 
+  /** Το πραγματικό μέγεθος του πλαισίου του player, σε ακέραια pixel. */
+  function stageSize_() {
+    var frame = document.querySelector('.player-ratio');
+    var rect = frame ? frame.getBoundingClientRect() : null;
+
+    if (!rect || rect.width < 1 || rect.height < 1) {
+      return { width: 772, height: 434 };   // εφεδρικό, όσο η κάρτα
+    }
+    return { width: Math.round(rect.width), height: Math.round(rect.height) };
+  }
+
+  /**
+   * Ενημερώνει τον player για το τρέχον μέγεθός του. Πρέπει να καλείται σε
+   * κάθε αλλαγή διαστάσεων — αλλαγή παραθύρου, είσοδος και έξοδος από πλήρη
+   * οθόνη — αλλιώς το YouTube συνεχίζει να σερβίρει ανάλυση για το παλιό.
+   */
+  function syncPlayerSize() {
+    if (!player || typeof player.setSize !== 'function') return;
+    var size = stageSize_();
+    try {
+      player.setSize(size.width, size.height);
+    } catch (err) {
+      /* Ο player μπορεί να μην είναι ακόμη έτοιμος· αγνοείται. */
+    }
+  }
+
   function onPlayerReady() {
     $('btn-playpause').disabled = false;
+    syncPlayerSize();
     updateReadout();
     /* Δειγματοληψία 4 φορές το δευτερόλεπτο. */
     pollTimer = setInterval(pollPlayer, 250);
@@ -905,6 +940,10 @@
     var active = !!fullscreenElement();
     $('btn-exit-fullscreen').hidden = !active;
     $('btn-fullscreen').textContent = active ? 'Έξοδος από πλήρη οθόνη' : 'Πλήρης οθόνη';
+
+    /* Μικρή καθυστέρηση: η μετάβαση σε/από πλήρη οθόνη δεν έχει ολοκληρωθεί
+       τη στιγμή του συμβάντος, οπότε οι διαστάσεις θα ήταν ακόμη οι παλιές. */
+    setTimeout(syncPlayerSize, 250);
   }
 
   function wireVideoControls() {
@@ -938,6 +977,14 @@
     /* Καμία αλληλεπίδραση με τον player, ούτε μέσω δεξιού κλικ. */
     $('player-shield').addEventListener('contextmenu', function (e) {
       e.preventDefault();
+    });
+
+    /* Αλλαγή μεγέθους παραθύρου: ενημερώνουμε τον player, με μικρή αναμονή
+       ώστε να μη στέλνουμε δεκάδες κλήσεις κατά τη διάρκεια του σύρσιμου. */
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(syncPlayerSize, 300);
     });
 
     /* Πλήρης οθόνη. Αν ο browser δεν την υποστηρίζει, κρύβουμε το κουμπί. */
