@@ -258,6 +258,8 @@
     'version', 'email',
     'DEM1_age', 'DEM2_gender', 'DEM3_edu', 'DEM3_edu_other', 'DEM4_freq', 'DEM5_ai',
     'DEM6_device', 'DEM6_device_other',
+    'VID1_watch_seconds', 'VID2_screen_seconds',
+    'VID3_duration_seconds', 'VID4_completed',
     'LE1', 'LE2', 'LE3', 'LE4', 'LE5', 'LE6',
     'SP1', 'SP2', 'SP3', 'SP4',
     'AU1', 'AU2', 'AU3',
@@ -696,29 +698,37 @@
   }
 
   /* ==================================================================
-     ΒΙΝΤΕΟ — έλεγχος πλήρους παρακολούθησης
+     ΒΙΝΤΕΟ — ελεύθερος player με κρυφή μέτρηση χρόνου
 
-     Το κουμπί «Συνέχεια στο ερωτηματολόγιο» ενεργοποιείται μόνο όταν
-     ισχύουν ΚΑΙ ΤΑ ΔΥΟ:
-       (1) ο player έφτασε σε κατάσταση ENDED, ΚΑΙ
-       (2) ο δικός μας μετρητής πραγματικού χρόνου παρακολούθησης
-           (τρέχει ΜΟΝΟ όσο η κατάσταση είναι PLAYING) έχει φτάσει
-           τουλάχιστον στο 95% της διάρκειας του βίντεο.
+     Ο συμμετέχων έχει πλήρη χειριστήρια YouTube: αναπαραγωγή, παύση,
+     γραμμή χρόνου, επιλογή ποιότητας, πλήρης οθόνη. Δεν εμποδίζεται
+     τίποτα και δεν υπάρχει κλείδωμα στο «Συνέχεια».
 
-     Ο δεύτερος όρος είναι αυτός που κλείνει τα παραθυράκια: ακόμη κι αν
-     κάποιος καταφέρει να προκαλέσει ENDED χωρίς να δει το βίντεο, ο
-     μετρητής δεν θα έχει μαζέψει αρκετό χρόνο. Ο μετρητής αθροίζει
-     πραγματικό χρόνο (performance.now), όχι τη θέση του βίντεο, οπότε
-     δεν επηρεάζεται από τυχόν άλματα στη γραμμή χρόνου.
+     Στο παρασκήνιο μετρώνται και στέλνονται στο φύλλο:
+       VID1_watch_seconds     πραγματικός χρόνος αναπαραγωγής
+       VID2_screen_seconds    συνολικός χρόνος παραμονής στην οθόνη
+       VID3_duration_seconds  διάρκεια του βίντεο
+       VID4_completed         αν έφτασε στο τέλος
+
+     Ο μετρητής παρακολούθησης αθροίζει πραγματικό χρόνο (performance.now)
+     ΜΟΝΟ όσο ο player είναι σε κατάσταση PLAYING — δεν κοιτά τη θέση στη
+     γραμμή χρόνου. Άρα το σύρσιμο της μπάρας δεν τον αυξάνει, και μπορείς
+     στην ανάλυση να αποκλείσεις όποιον δεν παρακολούθησε πραγματικά.
      ================================================================== */
 
   var player = null;
-  var watchedMs = 0;          // αθροιστικός πραγματικός χρόνος σε PLAYING
-  var lastTickTs = null;      // χρονοσήμανση προηγούμενου δείγματος
-  var hasEnded = false;       // έφτασε ποτέ σε ENDED
+  var watchedMs = 0;            // αθροιστικός χρόνος σε PLAYING
+  var lastTickTs = null;        // χρονοσήμανση προηγούμενου δείγματος
+  var hasEnded = false;         // έφτασε ποτέ στο τέλος
   var pollTimer = null;
+  var screenEnteredTs = null;   // πότε εμφανίστηκε η οθόνη του βίντεο
+
+  function nowMs_() {
+    return (window.performance && performance.now) ? performance.now() : Date.now();
+  }
 
   function setupPlayer(videoId) {
+    screenEnteredTs = nowMs_();
     loadYouTubeAPI(function () { createPlayer(videoId); });
   }
 
@@ -738,16 +748,9 @@
 
   function createPlayer(videoId) {
     var vars = {
-      /* Τα χειριστήρια είναι ενεργά ΜΟΝΟ για να μπορεί ο συμμετέχων να
-         επιλέξει ποιότητα από το γρανάζι — το YouTube δεν επιτρέπει πλέον
-         προγραμματιστικό ορισμό ανάλυσης. Ο έλεγχος πλήρους παρακολούθησης
-         δεν επηρεάζεται: μετράει πραγματικό χρόνο αναπαραγωγής, οπότε ούτε
-         η αναζήτηση στη γραμμή χρόνου ούτε η αυξημένη ταχύτητα βοηθούν. */
-      controls: 1,
-      disablekb: 1,         // καμία συντόμευση πληκτρολογίου
+      controls: 1,          // πλήρη χειριστήρια στον χρήστη
       rel: 0,               // χωρίς προτεινόμενα βίντεο
       modestbranding: 1,
-      fs: 0,                // η πλήρης οθόνη γίνεται από το δικό μας κουμπί
       playsinline: 1,
       iv_load_policy: 3,    // χωρίς επισημάνσεις
       autoplay: 0
@@ -756,10 +759,6 @@
       vars.origin = location.origin;
     }
 
-    /* Οι ρητές διαστάσεις είναι κρίσιμες: χωρίς αυτές το YouTube υποθέτει
-       640x390 και σερβίρει 480p, ανεξάρτητα από το πόσο μεγάλος φαίνεται ο
-       player μέσω CSS. Η ανάλυση επιλέγεται με βάση το μέγεθος που γνωρίζει
-       ο ίδιος ο player, όχι το οπτικό. */
     var size = stageSize_();
 
     player = new YT.Player('player', {
@@ -781,16 +780,11 @@
     var rect = frame ? frame.getBoundingClientRect() : null;
 
     if (!rect || rect.width < 1 || rect.height < 1) {
-      return { width: 772, height: 434 };   // εφεδρικό, όσο η κάρτα
+      return { width: 772, height: 434 };
     }
     return { width: Math.round(rect.width), height: Math.round(rect.height) };
   }
 
-  /**
-   * Ενημερώνει τον player για το τρέχον μέγεθός του. Πρέπει να καλείται σε
-   * κάθε αλλαγή διαστάσεων — αλλαγή παραθύρου, είσοδος και έξοδος από πλήρη
-   * οθόνη — αλλιώς το YouTube συνεχίζει να σερβίρει ανάλυση για το παλιό.
-   */
   function syncPlayerSize() {
     if (!player || typeof player.setSize !== 'function') return;
     var size = stageSize_();
@@ -802,25 +796,14 @@
   }
 
   function onPlayerReady() {
-    $('btn-playpause').disabled = false;
     syncPlayerSize();
-    updateReadout();
-    /* Δειγματοληψία 4 φορές το δευτερόλεπτο. */
+    /* Δειγματοληψία 4 φορές το δευτερόλεπτο για τον μετρητή. */
     pollTimer = setInterval(pollPlayer, 250);
   }
 
   function onPlayerStateChange(event) {
-    var button = $('btn-playpause');
-
-    if (event.data === YT.PlayerState.PLAYING) {
-      button.textContent = 'Παύση';
-    } else {
-      button.textContent = 'Αναπαραγωγή';
-    }
-
     if (event.data === YT.PlayerState.ENDED) {
       hasEnded = true;
-      updateContinueState();
     }
   }
 
@@ -834,17 +817,12 @@
     box.hidden = false;
   }
 
-  /**
-   * Καλείται κάθε 250ms. Αθροίζει πραγματικό χρόνο μόνο όσο ο player
-   * βρίσκεται σε PLAYING και ενημερώνει την ένδειξη προόδου.
-   */
+  /** Αθροίζει πραγματικό χρόνο μόνο όσο ο player παίζει. */
   function pollPlayer() {
     if (!player || typeof player.getPlayerState !== 'function') return;
 
     var state = player.getPlayerState();
-    var now = (window.performance && performance.now)
-      ? performance.now()
-      : Date.now();
+    var now = nowMs_();
 
     if (state === YT.PlayerState.PLAYING) {
       if (lastTickTs !== null) {
@@ -856,151 +834,48 @@
     } else {
       lastTickTs = null;
     }
-
-    updateReadout();
-    updateContinueState();
   }
 
-  function formatTime(seconds) {
-    if (!isFinite(seconds) || seconds < 0) seconds = 0;
-    var total = Math.floor(seconds);
-    var minutes = Math.floor(total / 60);
-    var rest = total % 60;
-    return minutes + ':' + (rest < 10 ? '0' : '') + rest;
-  }
-
-  function updateReadout() {
-    if (!player || typeof player.getDuration !== 'function') return;
-
-    var duration = player.getDuration() || 0;
-    var current = player.getCurrentTime() || 0;
-
-    $('time-readout').textContent = formatTime(current) + ' / ' + formatTime(duration);
-    $('track-fill').style.width = duration > 0
-      ? Math.min(100, (current / duration) * 100) + '%'
-      : '0%';
-  }
-
-  function updateContinueState() {
-    if (!player || typeof player.getDuration !== 'function') return;
-
-    var duration = player.getDuration() || 0;
-    var watchedSeconds = watchedMs / 1000;
-
-    /* Και οι δύο όροι πρέπει να ισχύουν ταυτόχρονα. */
-    var complete = hasEnded &&
-                   duration > 0 &&
-                   watchedSeconds >= duration * REQUIRED_WATCH_RATIO;
-
-    $('btn-video-next').disabled = !complete;
-
-    if (complete) {
-      $('video-hint').textContent = 'Η παρακολούθηση ολοκληρώθηκε. Μπορείτε να συνεχίσετε.';
-    } else if (hasEnded) {
-      /* Έφτασε στο τέλος αλλά δεν παρακολουθήθηκε αρκετό μέρος. */
-      $('video-hint').textContent = 'Το βίντεο δεν παρακολουθήθηκε στο σύνολό του. Παρακαλούμε πατήστε «Αναπαραγωγή» για να συνεχίσετε την παρακολούθηση.';
-    }
-  }
-
-  /* ------------------------------------------------------------------
-     Πλήρης οθόνη
-
-     Σε πλήρη οθόνη μπαίνει το #video-stage, δηλαδή ο player μαζί με την
-     ασπίδα και τα δικά μας χειριστήρια. Έτσι ο χρήστης εξακολουθεί να μην
-     μπορεί να αλληλεπιδράσει με τον player του YouTube, και συνεχίζει να
-     βλέπει την ένδειξη χρόνου. Έξοδος με Escape (από τον browser) ή με το
-     κουμπί ✕.
-     ------------------------------------------------------------------ */
-
-  function fullscreenElement() {
-    return document.fullscreenElement || document.webkitFullscreenElement || null;
-  }
-
-  function fullscreenSupported() {
-    var stage = $('video-stage');
-    return !!(stage && (stage.requestFullscreen || stage.webkitRequestFullscreen));
-  }
-
-  function toggleFullscreen() {
-    var stage = $('video-stage');
-    if (!stage) return;
-
-    if (fullscreenElement()) {
-      if (document.exitFullscreen) document.exitFullscreen();
-      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      return;
+  /** Κλείνει τους μετρητές και τους περνά στις απαντήσεις. */
+  function collectVideoMetrics() {
+    var duration = 0;
+    try {
+      if (player && typeof player.getDuration === 'function') {
+        duration = player.getDuration() || 0;
+      }
+    } catch (err) {
+      duration = 0;
     }
 
-    var request = stage.requestFullscreen || stage.webkitRequestFullscreen;
-    if (!request) return;
-
-    var result = request.call(stage);
-    /* Ο Chrome επιστρέφει Promise· αν απορριφθεί, δεν χαλάει τίποτα. */
-    if (result && typeof result.catch === 'function') {
-      result.catch(function () {});
-    }
-  }
-
-  function syncFullscreenUi() {
-    var active = !!fullscreenElement();
-    $('btn-exit-fullscreen').hidden = !active;
-    $('btn-fullscreen').textContent = active ? 'Έξοδος από πλήρη οθόνη' : 'Πλήρης οθόνη';
-
-    /* Μικρή καθυστέρηση: η μετάβαση σε/από πλήρη οθόνη δεν έχει ολοκληρωθεί
-       τη στιγμή του συμβάντος, οπότε οι διαστάσεις θα ήταν ακόμη οι παλιές. */
-    setTimeout(syncPlayerSize, 250);
+    ANSWERS.VID1_watch_seconds = Math.round(watchedMs / 1000);
+    ANSWERS.VID2_screen_seconds = screenEnteredTs === null
+      ? 0
+      : Math.round((nowMs_() - screenEnteredTs) / 1000);
+    ANSWERS.VID3_duration_seconds = Math.round(duration);
+    ANSWERS.VID4_completed = hasEnded ? 'Ναι' : 'Όχι';
   }
 
   function wireVideoControls() {
-    $('btn-playpause').addEventListener('click', function () {
-      if (!player) return;
-      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
-      }
-    });
-
     $('btn-video-next').addEventListener('click', function () {
-      if ($('btn-video-next').disabled) return;
       if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-      /* Αν είμαστε ακόμη σε πλήρη οθόνη, βγαίνουμε πριν αλλάξει οθόνη. */
-      if (fullscreenElement()) {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      }
+      collectVideoMetrics();
       showScreen('screen-s2');
     });
 
-    /* Αυτόματη παύση όταν ο χρήστης αλλάξει καρτέλα ή παράθυρο. */
+    /* Αυτόματη παύση όταν ο χρήστης αλλάξει καρτέλα ή παράθυρο, ώστε ο
+       μετρητής να μη μαζεύει χρόνο που κανείς δεν παρακολουθεί. */
     document.addEventListener('visibilitychange', function () {
       if (document.hidden && player && typeof player.pauseVideo === 'function') {
         if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
       }
     });
 
-    /* Καμία αλληλεπίδραση με τον player, ούτε μέσω δεξιού κλικ. */
-    $('player-shield').addEventListener('contextmenu', function (e) {
-      e.preventDefault();
-    });
-
-    /* Αλλαγή μεγέθους παραθύρου: ενημερώνουμε τον player, με μικρή αναμονή
-       ώστε να μη στέλνουμε δεκάδες κλήσεις κατά τη διάρκεια του σύρσιμου. */
+    /* Αλλαγή μεγέθους παραθύρου: ενημερώνουμε τον player. */
     var resizeTimer = null;
     window.addEventListener('resize', function () {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(syncPlayerSize, 300);
     });
-
-    /* Πλήρης οθόνη. Αν ο browser δεν την υποστηρίζει, κρύβουμε το κουμπί. */
-    if (fullscreenSupported()) {
-      $('btn-fullscreen').addEventListener('click', toggleFullscreen);
-      $('btn-exit-fullscreen').addEventListener('click', toggleFullscreen);
-      document.addEventListener('fullscreenchange', syncFullscreenUi);
-      document.addEventListener('webkitfullscreenchange', syncFullscreenUi);
-    } else {
-      $('btn-fullscreen').hidden = true;
-    }
   }
 
   /* ------------------------------------------------------------------

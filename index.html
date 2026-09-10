@@ -75,34 +75,16 @@
 
       <p><strong>Πριν ξεκινήσετε:</strong> πατήστε το εικονίδιο ⚙ στη γραμμή χειριστηρίων του βίντεο και επιλέξτε ποιότητα <strong>1080p</strong>. Συνιστάται επίσης η παρακολούθηση σε πλήρη οθόνη.</p>
 
-      <!-- Ό,τι μπαίνει σε πλήρη οθόνη βρίσκεται μέσα σε αυτό το στοιχείο. -->
-      <div class="video-stage" id="video-stage">
-        <div class="player-frame">
-          <div class="player-ratio">
-            <div id="player"></div>
-            <!-- Ασπίδα: μπλοκάρει κάθε αλληλεπίδραση με τον player του YouTube. -->
-            <div class="player-shield" id="player-shield" aria-hidden="true"></div>
-          </div>
-        </div>
-
-        <button type="button" class="fs-exit" id="btn-exit-fullscreen"
-                aria-label="Έξοδος από πλήρη οθόνη" title="Έξοδος (Esc)" hidden>✕</button>
-
-        <div class="player-bar">
-          <div class="track" aria-hidden="true"><div class="track-fill" id="track-fill"></div></div>
-          <div class="player-row">
-            <button type="button" class="btn btn-quiet" id="btn-playpause" disabled>Αναπαραγωγή</button>
-            <button type="button" class="btn btn-quiet" id="btn-fullscreen">Πλήρης οθόνη</button>
-            <span class="time" id="time-readout">0:00 / 0:00</span>
-          </div>
+      <div class="player-frame">
+        <div class="player-ratio">
+          <div id="player"></div>
         </div>
       </div>
 
-      <p class="hint" id="video-hint">Το κουμπί «Συνέχεια στο ερωτηματολόγιο» θα ενεργοποιηθεί μόλις ολοκληρωθεί η παρακολούθηση του βίντεο.</p>
       <p class="q-error" id="video-error" hidden></p>
 
       <div class="actions">
-        <button type="button" class="btn btn-primary" id="btn-video-next" disabled>Συνέχεια στο ερωτηματολόγιο</button>
+        <button type="button" class="btn btn-primary" id="btn-video-next">Συνέχεια στο ερωτηματολόγιο</button>
       </div>
     </div>
   </section>
