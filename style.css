@@ -535,23 +535,3 @@ input[type="checkbox"]:checked {
   appearance: auto;
   accent-color: var(--accent);
 }
-
-/* ---------- Πλατύτερη οθόνη βίντεο ----------
-   Το YouTube διαλέγει ανάλυση με βάση το πλάτος του player σε CSS pixel:
-   χωράει τη μεγαλύτερη βαθμίδα που δεν ξεπερνά τον player (360p=640,
-   480p=854, 720p=1280, 1080p=1920). Με κάρτα 860px ο player είναι 772px,
-   οπότε κολλάει στα 360p. Εδώ τον ανοίγουμε ώστε να περάσει το κατώφλι
-   των 1280px και να παίζει 720p, και 1080p σε πλήρη οθόνη.
-   Το κείμενο μένει σε αναγνώσιμο πλάτος. */
-
-@media (min-width: 940px) {
-  #screen-video {
-    width: min(1400px, calc(100vw - 48px));
-    margin-left: calc((860px - min(1400px, calc(100vw - 48px))) / 2);
-  }
-
-  #screen-video .card > h2,
-  #screen-video .card > p {
-    max-width: 780px;
-  }
-}
