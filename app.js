@@ -64,15 +64,10 @@
 
   var VERSION_NOTE =
     'eyJBIjogIs6gzrHPgc6xzrrOv867zr/Phc64zq7Pg86xz4TOtSDPhM63zr0gzrXOus60zr/P' +
-    'h86uIM6RIOKAlCDPhM6/IM61zrrPgM6xzrnOtM61z4XPhM65zrrPjCDOss6vzr3PhM61zr8g' +
-    'z4PPhM6/IM6/z4DOv86vzr8gzr8gz4DOsc+Bzr/Phc+DzrnOsc+Dz4TOrs+CIM6uz4TOsc69' +
-    'IM+IzrfPhs65zrHOus+MIM6/zrzOv86vz4nOvM6xLCDOtM63zrzOuc6/z4XPgc6zzrfOvM6t' +
-    'zr3OvyDOvM61IM+EzrXPh869zr/Ou86/zrPOr861z4IgzqTOtc+Hzr3Ot8+Ezq7PgiDOnc6/' +
-    'zrfOvM6/z4PPjc69zrfPgi4iLCAiQiI6ICLOoM6xz4HOsc66zr/Ou86/z4XOuM6uz4POsc+E' +
-    'zrUgz4TOt869IM61zrrOtM6/z4fOriDOkiDigJQgz4TOvyDOtc66z4DOsc65zrTOtc+Fz4TO' +
-    'uc66z4wgzrLOr869z4TOtc6/IM+Dz4TOvyDOv8+Azr/Or86/IM6/IM+AzrHPgc6/z4XPg865' +
-    'zrHPg8+Ezq7PgiDOrs+EzrHOvSDPhM6/IM+Az4HOsc6zzrzOsc+EzrnOus+MIM6sz4TOv868' +
-    'zr8sIM+DzrUgz4bPhc+DzrnOus6uIM6yzrnOvc+EzrXOv8+DzrrPjM+AzrfPg863LiJ9';
+    'h86uIM6RIC0gzqjOt8+GzrnOsc66z4wgzr/OvM6/zq/Pic68zrEgz4DOsc+Bzr/Phc+DzrnO' +
+    'sc+Dz4TOriIsICJCIjogIs6gzrHPgc6xzrrOv867zr/Phc64zq7Pg86xz4TOtSDPhM63zr0g' +
+    'zrXOus60zr/Ph86uIM6SIC0gzqDPgc6xzrPOvM6xz4TOuc66z4zPgiDPgM6xz4HOv8+Fz4PO' +
+    'uc6xz4PPhM6uz4IifQ==';
 
   /* ------------------------------------------------------------------
      Κλίμακα Likert (τιμές 1-5, ετικέτες ορατές)
